@@ -1,4 +1,4 @@
-.App {
+#root {
   text-align: center;
 }
 
@@ -31,4 +31,14 @@
 .App-header nav a {
   margin: 0 20px;
   color: #050;
+}
+
+.weather-list {
+  max-width: 500px;
+  display: inline-block;
+}
+
+.weather-list span {
+  display: block;
+  font-weight: bold;
 }

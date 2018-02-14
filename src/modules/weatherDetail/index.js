@@ -60,7 +60,7 @@ class weatherDetail extends Component {
                     isLoading &&
                     <div>Loading...</div>
                 }
-                { Object.keys(weatherData).length > 0 ?
+                { Object.keys(weatherData).length > 0 && !isLoading ?
                 (
                     <div>
                         { !this.state.dataIsFresh &&
@@ -70,15 +70,15 @@ class weatherDetail extends Component {
                             </div>
                         }
                         <p>City: { weatherData.city.name }</p>
-                        <ul>
+                        <ul className="weather-list">
                         {
                             weatherData.list.map((item, idx) => (
-                            <li key={idx}>
-                                <span>Time: {item.dt_txt}</span>
-                                <span>Temp: {item.main.temp}</span>
-                                <img src={`//openweathermap.org/img/w/${item.weather[0].icon}.png`} alt="weather icon"/>
-                            </li>
-                        ))
+                                <li key={idx}>
+                                    <span>Time: {item.dt_txt}</span>
+                                    <span>Temp: {item.main.temp}</span>
+                                    <img src={`//openweathermap.org/img/w/${item.weather[0].icon}.png`} alt="weather icon"/>
+                                </li>
+                            ))
                         }
                         </ul>
                     </div>

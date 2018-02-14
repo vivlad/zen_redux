@@ -27,3 +27,8 @@
 .indicator.pressed {
   background-color: red;
 }
+
+.App-header nav a {
+  margin: 0 20px;
+  color: #050;
+}

@@ -3,56 +3,26 @@ import { connect } from 'react-redux';
 
 import * as weatherActions from '../../actions/weatherActions';
 import Header from '../../components/Header';
+import CitySelector from '../../components/CitySelector';
+import './index.css';
 
 class weatherDetail extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            dataIsFresh: true, //fresh data by default
-        };
+    componentDidMount() {
+      if( this.props.needsToLoadData ) {
+        this.props.loadWeather();
+      }
     }
 
-    getWeather = () => {
-        const apiKey = 'bd5e378503939ddaee76f12ad7a97608';
-        const cityID = '687700'; //ZP
-        const query = `http://api.openweathermap.org/data/2.5/forecast?id=${cityID}&APPID=${apiKey}&units=metric`;
-        const params = {
-          method: 'GET',
-        };
-        this.props.loadingStarted();
-        // set timeout for load animation
-        setTimeout( () => {
-            fetch( query, params )
-            .then( data => data.json() )
-            .then( data => {
-                this.props.loadWeather(data);
-                this.props.loadingFinished();
-                this.setState({
-                    dataIsFresh: true, // data was updated right now
-                });
-            })
-            .catch( err => {
-                console.log(err);
-                this.props.loadingFinished();
-            });
-        }, 2000 );
+    componentWillReceiveProps(nextProps) {
+      if( nextProps.needsToLoadData ) {
+        this.props.loadWeather();
       }
-    
-      componentDidMount() {
-        const weatherData = this.props.weatherData;
-        if( Object.keys(weatherData).length === 0 ) {
-            this.getWeather();
-        } else {
-            this.setState({
-                dataIsFresh: false, // this data is from store.
-            });
-        }
-      }
+    }
 
     render(){
-        const { isLoading, weatherData, lastUpdate } = this.props;
-        
+        const { isLoading, weatherData } = this.props;
+       
         return(
             <div>
                 <Header/>
@@ -63,13 +33,9 @@ class weatherDetail extends Component {
                 { Object.keys(weatherData).length > 0 && !isLoading ?
                 (
                     <div>
-                        { !this.state.dataIsFresh &&
-                            <div>
-                                <p>This data was updated { (Date.now() - lastUpdate) / 1000 } seconds ago, so you can update it now</p>
-                                <button onClick={ () => this.getWeather() }>Get fresh data</button>
-                            </div>
-                        }
+                        <p>Weather data. Last updeted { (Date.now() - this.props.lastUpdate)/1000 } seconds ago</p>
                         <p>City: { weatherData.city.name }</p>
+                        <CitySelector />
                         <ul className="weather-list">
                         {
                             weatherData.list.map((item, idx) => (
@@ -94,16 +60,15 @@ class weatherDetail extends Component {
 
 }
 
-const mapDispatchToProps = dispatch => ({
-    loadWeather: payload => dispatch(weatherActions.loadWeather(payload)),
-    loadingStarted: () => dispatch(weatherActions.loadingStarted()),
-    loadingFinished: () => dispatch(weatherActions.loadingFinished()),
+  const mapDispatchToProps = dispatch => ({
+    loadWeather: () => dispatch(weatherActions.loadWeather()),
   });
   
   const mapStateToProps = (state) => ({
     isLoading: state.weatherReducer.isLoading,
     weatherData: state.weatherReducer.weatherData,
     lastUpdate: state.weatherReducer.lastUpdate,
+    needsToLoadData: state.weatherReducer.needsToLoadData,
   });
 
 export default connect(mapStateToProps, mapDispatchToProps)(weatherDetail);
